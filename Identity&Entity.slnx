@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="Identity&amp;Entity.api/Identity&amp;Entity.api.csproj" />
   <Project Path="Identity&amp;Entity.data_01/Identity&amp;Entity.data_01.csproj" />
+  <Project Path="Identity&amp;Entity_api_02/Identity&amp;Entity_api_02.csproj" />
 </Solution>
