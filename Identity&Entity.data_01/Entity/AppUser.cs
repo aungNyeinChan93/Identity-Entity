@@ -7,5 +7,7 @@ namespace Identity_Entity.data_01.Entity
 {
     public class AppUser :IdentityUser
     {
+
+        public List<Quote> Quotes { get; set; } = new List<Quote>();
     }
 }
