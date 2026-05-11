@@ -49,11 +49,11 @@ namespace Identity_Entity.api.Services
                 if (userResult.Succeeded)
                 {
                     var role = await _userManager.AddToRoleAsync(newUser, requestModel.Role);
-                    await transaction.CommitAsync();
                     if (!role.Succeeded)
                     {
                         await transaction.RollbackAsync();
                     }
+                    await transaction.CommitAsync();
                 }
                 else
                 {
@@ -62,6 +62,7 @@ namespace Identity_Entity.api.Services
             }
             catch (Exception)
             {
+                await transaction.RollbackAsync();
                 throw;
             }
 

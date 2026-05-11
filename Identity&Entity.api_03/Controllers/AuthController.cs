@@ -1,5 +1,6 @@
 ﻿using Identity_Entity.api_03.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -10,6 +11,8 @@ namespace Identity_Entity.api_03.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login([FromBody]LoginRequestModel requestModel)
         {
@@ -23,29 +26,43 @@ namespace Identity_Entity.api_03.Controllers
 
            await HttpContext.SignInAsync("cookies",user);
 
-           return Ok("Login Success");  
+            return Ok("Login Success");   
         }
 
 
+        [Authorize]
         [HttpGet("isAuth")]
-        public async Task<IActionResult> IsAuth([FromQuery]string email)
+        public async Task<IActionResult> IsAuth()
         {
-            if (!HttpContext.User.HasClaim("email",email))
-            {
-                return StatusCode(401);
-            }
+            //if (!HttpContext.User.HasClaim("email",email))
+            //{
+            //    return StatusCode(401);
+            //}
             return Ok(HttpContext.User.FindFirst("email")!.Value);
         }
 
+        [Authorize(Policy = "role admin")]
         [HttpGet("isAdmin")]
-        public async Task<IActionResult> IsAdmin()
+        public async Task<IActionResult> IsAdminByPolicy()
         {
-            if (!HttpContext.User.HasClaim("role", "admin"))
-            {
-                return StatusCode(401);
-            }
+            //if (!HttpContext.User.HasClaim("role", "admin"))
+            //{
+            //    return StatusCode(401);
+            //}
             return Ok(HttpContext.User.FindFirst("role")!.Value);
         }
+
+        [Authorize(Roles ="admin")]
+        [HttpGet("isRole")]
+        public async Task<IActionResult> IsAdminByRole()
+        {
+            //if (!HttpContext.User.HasClaim("role", "admin"))
+            //{
+            //    return StatusCode(401);
+            //}
+            return Ok(HttpContext.User.FindFirst("role")!.Value);
+        }
+
     }
 
 }
