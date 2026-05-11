@@ -62,7 +62,7 @@ namespace Identity_Entity.api_04.Controllers
             //{
             //    return Ok("Is Auth");
             //}
-            return Ok("Is Auth");
+            return Ok("Is Class A");
         }
 
 
