@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
+using System.Security.Claims;
 
 namespace Identity_Entity_api_02.Middlewares
 {
@@ -18,7 +19,7 @@ namespace Identity_Entity_api_02.Middlewares
 
             if (isPublicRoutes)
             {
-                goto Result;
+                goto skip;
             }
 
             var protector = context.RequestServices.GetRequiredService<IDataProtectionProvider>().CreateProtector("auth-cookie-protector");
@@ -31,10 +32,17 @@ namespace Identity_Entity_api_02.Middlewares
             var key = parts[0];
             var value = parts[1];
 
-            context.Items["AuthKey"] = key;
-            context.Items["AuthValue"] = value;
+            //context.Items["AuthKey"] = key;
+            //context.Items["AuthValue"] = value;
 
-            Result:
+            var claims = new ClaimsIdentity(new List<Claim>
+            {
+                new Claim(key,value),
+            });
+
+            context.User = new ClaimsPrincipal(claims);
+
+            skip:
             await next(context);
 
         }

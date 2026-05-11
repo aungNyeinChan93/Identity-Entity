@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Identity_Entity_api_02.Controllers
 {
@@ -23,25 +24,27 @@ namespace Identity_Entity_api_02.Controllers
         public async Task<IActionResult> Login()
         {
             var protector = idp.CreateProtector("auth-cookie-protector");
-            //HttpContext.Response.Headers.SetCookie = $"auth={protector.Protect("name:chan")}";
-            contextAccessor.HttpContext!.Response.Headers.SetCookie = $"auth={protector.Protect("name:chan")}";
-            return Ok("login");
+            HttpContext.Response.Headers.SetCookie = $"auth={protector.Protect("name:chan")}";
+
+            //new ClaimsPrincipal()
+
+            return Ok("Login success"); 
         }
 
         [HttpGet("username")]
         public async Task<IActionResult> GetCookie()
         {
-           
-            var isKeySuccess = HttpContext.Items.TryGetValue("AuthKey", out var key);
-            var isValueSuccess = HttpContext.Items.TryGetValue("AuthValue", out var value);
-            if (!isKeySuccess || !isValueSuccess)
-            {
-                return Unauthorized();
-            }
-            return Ok(new
-            {
-                key,value
-            });
+            return Ok(HttpContext.User.FindFirst("name")!.Value);
+            //var isKeySuccess = HttpContext.Items.TryGetValue("AuthKey", out var key);
+            //var isValueSuccess = HttpContext.Items.TryGetValue("AuthValue", out var value);
+            //if (!isKeySuccess || !isValueSuccess)
+            //{
+            //    return Unauthorized();
+            //}
+            //return Ok(new
+            //{
+            //    key,value
+            //});
         }
     }
 }
