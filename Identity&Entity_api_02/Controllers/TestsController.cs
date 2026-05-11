@@ -28,20 +28,33 @@ namespace Identity_Entity_api_02.Controllers
             //HttpContext.Response.Headers.SetCookie = $"auth={protector.Protect("name:chan")}";
 
             var claims = new ClaimsIdentity([
-                    new Claim("name","aung")
-                ],"cookie");
+                    new Claim("name","aung"),
+                    new Claim("passport","mm"),
+                ], "cookie");
 
             var user = new ClaimsPrincipal(claims);
 
-            await HttpContext.SignInAsync("cookie",user);
+            await HttpContext.SignInAsync("cookie", user);
 
-            return Ok("Login success"); 
+            return Ok("login"); 
         }
 
         [HttpGet("username")]
         public async Task<IActionResult> GetCookie()
         {
-            return Ok(HttpContext.User.FindFirst("name")!.Value);
+            if (!HttpContext.User.Identity!.IsAuthenticated)
+            {
+                return StatusCode(401);
+            }
+
+            if (!HttpContext.User.HasClaim("passport","mm"))
+            {
+                return StatusCode(403);
+            }
+
+            var claim = HttpContext.User.Claims.First().Value;
+            var authName = HttpContext.User.FindFirst("name")!.Value;
+            return Ok(new {claim,authName});
             //var isKeySuccess = HttpContext.Items.TryGetValue("AuthKey", out var key);
             //var isValueSuccess = HttpContext.Items.TryGetValue("AuthValue", out var value);
             //if (!isKeySuccess || !isValueSuccess)

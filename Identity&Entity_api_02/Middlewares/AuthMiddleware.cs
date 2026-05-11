@@ -7,28 +7,31 @@ namespace Identity_Entity_api_02.Middlewares
     public class AuthMiddleware : IMiddleware
     {
 
-        private readonly HashSet<string> _publicRoutes = new HashSet<string>()
+        private readonly HashSet<string> protectedRoutes = new HashSet<string>()
         {
-            "/",
-            "/api/tests/login"
+           "/api/Auth/isAuth"
         }; 
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            var isPublicRoutes = _publicRoutes.Any(x=>x.Contains(context.Request.Path));
-
-            if (isPublicRoutes)
+            if (!protectedRoutes.Contains(context.Request.Path))
             {
-                goto skip;
+                await next(context);
+                return;
             }
 
-            var protector = context.RequestServices.GetRequiredService<IDataProtectionProvider>().CreateProtector("auth-cookie-protector");
-            var authCookie = context.Request.Headers.Cookie.FirstOrDefault(x => x!.StartsWith("auth="));
+            //var protector = context.RequestServices
+            //    .GetRequiredService<IDataProtectionProvider>()
+            //    .CreateProtector("auth-protector");
+
+            var authCookie = context.Request.Headers.Cookie.First();
+
             if (string.IsNullOrEmpty(authCookie)) return;
 
-            var protectorPayload = authCookie.Split("=").Last();
-            var payload = protector.Unprotect(protectorPayload);
-            var parts = payload.Split(":");
+            var protectorPayload = authCookie.Split("=").Last() ;
+
+            //var payload = protector.Unprotect(protectorPayload);
+            var parts = protectorPayload.Split(":");
             var key = parts[0];
             var value = parts[1];
 
@@ -42,7 +45,7 @@ namespace Identity_Entity_api_02.Middlewares
 
             context.User = new ClaimsPrincipal(claims);
 
-            skip:
+        skip:
             await next(context);
 
         }

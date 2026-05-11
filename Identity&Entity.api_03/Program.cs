@@ -1,20 +1,15 @@
-using Identity_Entity_api_02.Middlewares;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add services to the container.
+//const string AuthSchema = "cookies";
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddDataProtection();
-builder.Services.AddScoped<AuthMiddleware>();
-
-builder.Services.AddAuthentication("cookie")
-    .AddCookie("cookie");
-
+builder.Services.AddAuthentication("cookies")
+    .AddCookie("cookies");
 
 var app = builder.Build();
 
@@ -28,9 +23,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-app.UseAuthorization(); 
-
-app.UseMiddleware<AuthMiddleware>();
+app.UseAuthorization();
 
 app.MapControllers();
 
