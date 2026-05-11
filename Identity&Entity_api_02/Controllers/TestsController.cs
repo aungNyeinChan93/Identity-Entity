@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,10 +24,16 @@ namespace Identity_Entity_api_02.Controllers
         [HttpGet("login")]
         public async Task<IActionResult> Login()
         {
-            var protector = idp.CreateProtector("auth-cookie-protector");
-            HttpContext.Response.Headers.SetCookie = $"auth={protector.Protect("name:chan")}";
+            //var protector = idp.CreateProtector("auth-cookie-protector");
+            //HttpContext.Response.Headers.SetCookie = $"auth={protector.Protect("name:chan")}";
 
-            //new ClaimsPrincipal()
+            var claims = new ClaimsIdentity([
+                    new Claim("name","aung")
+                ],"cookie");
+
+            var user = new ClaimsPrincipal(claims);
+
+            await HttpContext.SignInAsync("cookie",user);
 
             return Ok("Login success"); 
         }

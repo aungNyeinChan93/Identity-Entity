@@ -35,10 +35,10 @@ namespace Identity_Entity_api_02.Middlewares
             //context.Items["AuthKey"] = key;
             //context.Items["AuthValue"] = value;
 
-            var claims = new ClaimsIdentity(new List<Claim>
-            {
+            var claims = new ClaimsIdentity(
+            [
                 new Claim(key,value),
-            });
+            ]);
 
             context.User = new ClaimsPrincipal(claims);
 
