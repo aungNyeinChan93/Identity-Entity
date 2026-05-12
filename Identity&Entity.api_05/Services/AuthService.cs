@@ -47,13 +47,14 @@ namespace Identity_Entity.api_05.Services
             {
                 var user = await _userManager.CreateAsync(newUser, requestModel.Password);
                 var role = await _userManager.AddToRoleAsync(newUser, requestModel.Role);
-                transaction.Commit();
 
                 if (!user.Succeeded || !role.Succeeded)
                 {
                     transaction.Rollback();
                     return default!;
                 }
+
+                transaction.Commit();
             }
             catch (Exception)
             {
@@ -67,14 +68,12 @@ namespace Identity_Entity.api_05.Services
 
         public async Task<string> LoginAsync(LoginRequestModel requestModel)
         {
-            //hasUser
             var user = await _userManager.FindByEmailAsync(requestModel.Email);
             if (user is null)
             {
                 return default!;
             }
 
-            //password check
             var checkPassword = await _signInManager.CheckPasswordSignInAsync(user,requestModel.password,false);
 
             if (!checkPassword.Succeeded)

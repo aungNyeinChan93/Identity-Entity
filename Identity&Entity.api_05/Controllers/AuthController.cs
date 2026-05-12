@@ -54,7 +54,11 @@ namespace Identity_Entity.api_05.Controllers
         public async Task<IActionResult> OnlyUser()
         {
             //var authUser = await _userManager.Users.ToList();
-            return Ok("user");
+
+            var email = base.User.Identities.First().Claims.ToList()[1].Value;
+            return Ok(email);
+
+            
         }
     }
 }

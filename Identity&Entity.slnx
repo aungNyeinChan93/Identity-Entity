@@ -6,6 +6,7 @@
   <Project Path="Identity&amp;Entity.api_03/Identity&amp;Entity.api_03.csproj" />
   <Project Path="Identity&amp;Entity.api_04/Identity&amp;Entity.api_04.csproj" />
   <Project Path="Identity&amp;Entity.api_05/Identity&amp;Entity.api_05.csproj" />
+  <Project Path="Identity&amp;Entity.api_06/Identity&amp;Entity.api_06.csproj" />
   <Project Path="Identity&amp;Entity.data_01/Identity&amp;Entity.data_01.csproj" />
   <Project Path="Identity&amp;Entity.Data_02/Identity&amp;Entity.Data_02.csproj" />
   <Project Path="Identity&amp;Entity_api_02/Identity&amp;Entity_api_02.csproj" />
