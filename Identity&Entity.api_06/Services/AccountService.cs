@@ -34,6 +34,15 @@ namespace Identity_Entity.api_06.Services
                 Role = requestModel.Role
             };
 
+            if (!string.IsNullOrEmpty(requestModel.Department))
+            {
+                newUser.Department = requestModel.Department;
+            }
+            if (requestModel.Age > 0 )
+            {
+                newUser.Age = requestModel.Age;
+            }
+
             //TODO hashpassword
 
             await _context.Users.AddAsync(newUser);
@@ -58,13 +67,27 @@ namespace Identity_Entity.api_06.Services
                 return false;
             }
             //create cookie
-            var claims = new ClaimsIdentity([
+            var claims = new List<Claim> 
+                {
                     new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name,user.UserName),
                     new Claim(ClaimTypes.Email,user.Email),
                     new Claim(ClaimTypes.Role,user.Role)
-                ], "cookieAuth");
+                };
 
-            var userPrinciple = new ClaimsPrincipal(claims);
+            if (!string.IsNullOrEmpty(user.Department))
+            {
+                claims.Add(new Claim("dept", user.Department));
+            }
+
+            if (user.Age > 0)
+            {
+                claims.Add(new Claim("age", user.Age.ToString()!));
+            }
+
+            var claimIdentity = new ClaimsIdentity(claims,"cookieAuth");
+
+            var userPrinciple = new ClaimsPrincipal(claimIdentity);
 
             await ctx.SignInAsync("cookieAuth",userPrinciple);
             return true;

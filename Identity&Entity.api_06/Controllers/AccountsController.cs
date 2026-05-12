@@ -1,5 +1,6 @@
 ﻿using Identity_Entity.api_06.Models.Accounts;
 using Identity_Entity.api_06.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,9 +31,12 @@ namespace Identity_Entity.api_06.Controllers
         }
 
 
-        [HttpPost]
+        [AllowAnonymous]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]LoginRequestModel requestModel)
         {
+            var auth = await HttpContext.AuthenticateAsync("cookieAuth");
+
             var isLoginSuccess = await _accountService.LoginAsync(requestModel, HttpContext);
             if (!isLoginSuccess)
             {
@@ -42,16 +46,57 @@ namespace Identity_Entity.api_06.Controllers
         }
 
         [Authorize]
-        [HttpPost("whoAmI")]
+        [HttpGet("whoAmI")]
         public async Task<IActionResult> WhoAmI()
         {
+            //if (!User.Identity!.IsAuthenticated)
+            //{
+            //    return Unauthorized();
+            //}
+            //return Ok("auth");
             var ctx = HttpContext.User;
-            var email = ctx.Identities.First().Claims.ToList()[1].Value;
+            var email = ctx.Identities.First().Claims.ToList()[2].Value;
             var user = await _accountService.GetUser(email);
-            return Ok(user!);
+            return Ok(user);
+        }
+
+        [Authorize(Policy = "admin-only")]
+        [HttpGet("adminOnly")]
+        public async Task<IActionResult> AdminOnly()
+        {   
+            return Ok("You are admin");
         }
 
 
+        [Authorize(Policy = "HR-only")]
+        [HttpGet("hrOnly")]
+        public async Task<IActionResult> HrOnly()
+        {
+            return Ok("hr");
+        }
 
+        [Authorize(Policy = "HR-Manager")]
+        [HttpGet("hrManager")]
+        public async Task<IActionResult> HrManager()
+        {
+            var name = User.Identity!.Name;
+            return Ok($"HR Manager! {name}");
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("cookieAuth");
+            return Ok("Sign Out ");
+        }
+
+
+        [Authorize(Policy = "over-18")]
+        [HttpGet("18")]
+        public async Task<IActionResult> Over18()
+        {
+            return Ok("18");
+        }
     }
 }
